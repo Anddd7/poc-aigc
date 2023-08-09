@@ -13,15 +13,21 @@ document.addEventListener("DOMContentLoaded", function () {
         chrome.storage.sync.get(["prompts"], function (result) {
             const prompts = result.prompts || [];
             prompts.forEach((prompt) => {
-                addPromptToUI(prompt.title, prompt.content);
+                addPromptToUI(prompt.id, prompt.title, prompt.content);
             });
         });
     }
 
+    let promptDialog = null;
+
     function showPromptDialog() {
-        const dialog = document.createElement("div");
-        dialog.classList.add("panel", "input-panel", "prompt-dialog");
-        dialog.innerHTML = `
+        if (promptDialog) {
+            return;
+        }
+
+        promptDialog = document.createElement("div");
+        promptDialog.classList.add("panel", "input-panel", "prompt-dialog");
+        promptDialog.innerHTML = `
         <h3>Add new Prompt</h3>
         <label for="title">Title:</label>
         <input type="text" id="title" required><br>
@@ -30,74 +36,122 @@ document.addEventListener("DOMContentLoaded", function () {
         <button id="savePromptButton">Save</button>
       `;
 
-        const savePromptButton = dialog.querySelector("#savePromptButton");
+        const savePromptButton = promptDialog.querySelector("#savePromptButton");
         savePromptButton.addEventListener("click", function () {
-            const title = dialog.querySelector("#title").value;
-            const content = dialog.querySelector("#content").value;
+            const id = new Date().getTime();
+            const title = promptDialog.querySelector("#title").value;
+            const content = promptDialog.querySelector("#content").value;
             if (title && content) {
-                savePrompt(title, content);
-                addPromptToUI(title, content);
-                dialog.remove();
+                savePrompt(id, title, content);
+                addPromptToUI(id, title, content);
+                promptDialog.remove();
+                promptDialog = null;
             }
         });
 
-        promptList.insertBefore(dialog, promptList.firstChild);
+        promptList.insertBefore(promptDialog, promptList.firstChild);
     }
 
-    function savePrompt(title, content) {
+    function savePrompt(id, title, content) {
         chrome.storage.sync.get(["prompts"], function (result) {
             const prompts = result.prompts || [];
-            prompts.push({ title: title, content: content });
+            prompts.push({ id: id, title: title, content: content });
             chrome.storage.sync.set({ prompts: prompts }, function () {
                 console.log("Prompt saved to storage.");
             });
         });
     }
 
-    function addPromptToUI(title, content, index) {
+    function addPromptToUI(id, title, content) {
         const promptPanel = document.createElement("div");
         promptPanel.classList.add("panel", "prompt-panel");
         promptPanel.innerHTML = `
         <h3>${title}</h3>
         <p>${content}</p>
+        <button class="delete-prompt-button" data-index="${id}">X</button>
         `;
 
         promptPanel.addEventListener("click", function () {
             copyToClipboard(content);
         });
 
+        const deleteButton = promptPanel.querySelector(".delete-prompt-button");
+        deleteButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            deletePrompt(id);
+            promptPanel.remove();
+        });
+
         promptList.appendChild(promptPanel);
     }
 
+    function deletePrompt(index) {
+        chrome.storage.sync.get(["prompts"], function (result) {
+            const prompts = result.prompts || [];
+            prompts.splice(prompts.findIndex((prompt) => prompt.id === index), 1);
+            chrome.storage.sync.set({ prompts: prompts }, function () {
+                console.log("Prompt deleted from storage.");
+            });
+        });
+    }
 
     function copyToClipboard(text) {
         const variablePattern = /{{(.*?)}}/g;
         const variables = text.match(variablePattern);
 
         if (variables && variables.length > 0) {
-            showVariableDialog(variables, text);
+            const uniqueVariables = [...new Set(variables)];
+            showVariableDialog(uniqueVariables, text);
         } else {
             copyText(text);
         }
     }
 
+    let variableDialog = null;
+
     function showVariableDialog(variables, originalText) {
-        const dialog = document.createElement("div");
-        dialog.classList.add("panel", "input-panel", "variable-dialog");
-        dialog.innerHTML = `
-          <h3>Fill in Variables</h3>
-          ${variables.map((variable) => `<label>${variable}: <input type="text" data-variable="${variable}"></label><br><br>`).join("")}
-          <button id="replaceVariablesButton">Replace and Copy</button>
+        if (!variableDialog) {
+            createVariableDialog(variables, originalText);
+        } else {
+            updateVariableDialog(variables, originalText);
+        }
+    }
+
+    function createVariableDialog(variables, originalText) {
+        variableDialog = document.createElement("div");
+        variableDialog.classList.add("panel", "input-panel", "variable-dialog");
+        variableDialog.innerHTML = `
+        <h3>Fill in Variables</h3>
+        ${variables.map((variable) => `<label>${variable}: <input type="text" data-variable="${variable}"></label><br>`).join("")}
+        <button id="replaceVariablesButton">Replace and Copy</button>
         `;
 
-        const replaceVariablesButton = dialog.querySelector("#replaceVariablesButton");
+        const replaceVariablesButton = variableDialog.querySelector("#replaceVariablesButton");
         replaceVariablesButton.addEventListener("click", function () {
-            const replacedText = replaceVariables(originalText, dialog);
+            const replacedText = replaceVariables(originalText, variableDialog);
             copyText(replacedText);
-            dialog.remove();
+            variableDialog.remove();
+            variableDialog = null;
         });
 
-        promptList.insertBefore(dialog, promptList.firstChild);
+        promptList.insertBefore(variableDialog, promptList.firstChild);
+    }
+
+    function updateVariableDialog(variables, originalText) {
+        // const inputContainer = variableDialog.querySelector(".variable-dialog");
+        variableDialog.innerHTML = `
+        <h3>Fill in Variables</h3>
+        ${variables.map((variable) => `<label>${variable}: <input type="text" data-variable="${variable}"></label><br>`).join("")}
+        <button id="replaceVariablesButton">Replace and Copy</button>
+        `;
+
+        const replaceVariablesButton = variableDialog.querySelector("#replaceVariablesButton");
+        replaceVariablesButton.addEventListener("click", function () {
+            const replacedText = replaceVariables(originalText, variableDialog);
+            copyText(replacedText);
+            variableDialog.remove();
+            variableDialog = null;
+        });
     }
 
     function replaceVariables(text, dialog) {
