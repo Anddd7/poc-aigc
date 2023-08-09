@@ -70,9 +70,10 @@ cot_prompt_expert = PromptTemplate.from_template(cot_tmpl).partial(
 light_cot_tmpl = """
 你将作为一个{role}与我合作完成{topic}。接下来你按以下步骤与我进行互动：
 1. 给出你对{topic}的理解，并询问我想要做什么。
-2. 用 SMART 模型帮我制定目标，并询问我是否需要修改这些目标，直到我满意为止。
+2. 用{model}帮我制定目标，并询问我是否需要修改这些目标，直到我满意为止。
 3. 为每一个目标制定一个计划，并询问我是否需要修改这些计划，直到我满意为止。
 4. 用表格输出这些目标和计划
 """
 
-lcot_expert = PromptTemplate.from_template(light_cot_tmpl)
+lcot_smart_expert = PromptTemplate.from_template(light_cot_tmpl).partial(model='SMART 模型')
+lcot_leantree_expert = PromptTemplate.from_template(light_cot_tmpl).partial(model='Lean Tree 模型')
