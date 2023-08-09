@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function loadAndRenderPrompts() {
+        promptList.innerHTML = "";
         chrome.storage.sync.get(["prompts"], function (result) {
             const prompts = result.prompts || [];
             prompts.forEach((prompt) => {
@@ -174,5 +175,42 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => {
                 console.error("Unable to copy text: ", error);
             });
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const clearSearchButton = document.getElementById("clearSearchButton");
+
+    searchButton.addEventListener("click", function () {
+        const keyword = searchInput.value.trim().toLowerCase();
+        searchPrompts(keyword);
+    });
+
+    clearSearchButton.addEventListener("click", function () {
+        clearSearch();
+    });
+
+    function searchPrompts(keyword) {
+        chrome.storage.sync.get(["prompts"], function (result) {
+            const prompts = result.prompts || [];
+            const filteredPrompts = prompts.filter(prompt => {
+                const lowerCaseTitle = prompt.title.toLowerCase();
+                const lowerCaseContent = prompt.content.toLowerCase();
+                return lowerCaseTitle.includes(keyword) || lowerCaseContent.includes(keyword);
+            });
+            renderPrompts(filteredPrompts);
+        });
+    }
+
+    function clearSearch() {
+        loadAndRenderPrompts();
+        searchInput.value = "";
+    }
+
+    function renderPrompts(prompts) {
+        promptList.innerHTML = "";
+        prompts.forEach((prompt) => {
+            addPromptToUI(prompt.id, prompt.title, prompt.content);
+        });
     }
 });

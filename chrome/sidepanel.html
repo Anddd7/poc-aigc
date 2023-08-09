@@ -16,28 +16,52 @@
       flex-direction: column;
     }
 
+    /* .prompt-panel 内的文字，最多显示 2 行 */
+    .prompt-panel p {
+      display: flex;
+      flex-direction: column;
+      max-height: 60px;
+      overflow: hidden;
+    }
+
     .prompt-panel:hover {
       border-color: grey;
       box-shadow: 0 0 10px #719ECE;
     }
 
     .delete-prompt-button {
-      margin-top: -70px;
-      float: right;
       color: red;
     }
 
-    /* hover 时 button 字体加粗  */
     .delete-prompt-button:hover {
       font-weight: bold;
       box-shadow: 0 0 10px palevioletred;
+    }
+
+    .tool-bar {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: 5px;
+    }
+
+    .tool-bar input {
+      width: 160px;
     }
   </style>
 </head>
 
 <body>
   <h1>Prompt Clipboard</h1>
-  <button id="createPromptButton">Create Prompt</button>
+  <div class="tool-bar">
+    <input type="text" id="searchInput" placeholder="Search by title or content">
+    <button id="searchButton">Search</button>
+    <button id="clearSearchButton">Clear</button>
+  </div>
+
+  <div class="tool-bar">
+    <button id="createPromptButton">Create Prompt</button>
+  </div>
   <div id="promptList">
     <!-- Prompt panels will be added here -->
   </div>
