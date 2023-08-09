@@ -12,6 +12,7 @@
     "permissions": [
         "sidePanel",
         "tabs",
+        "storage",
         "clipboardWrite"
     ],
     "commands": {

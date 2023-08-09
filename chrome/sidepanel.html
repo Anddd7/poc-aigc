@@ -3,11 +3,34 @@
 
 <head>
   <title>Prompt Clipboard</title>
+  <style>
+    .panel {
+      border: 1px solid;
+      margin: 5px;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .input-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prompt-panel:hover {
+      border-color: grey;
+      box-shadow: 0 0 10px #719ECE;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Prompt Clipboard</h1>
-  <p>This side panel will display only on www.google.com</p>
+  <button id="createPromptButton">Create Prompt</button>
+  <div id="promptList">
+    <!-- Prompt panels will be added here -->
+  </div>
+
+  <script src="sidepanel.js"></script>
 </body>
 
 </html>
