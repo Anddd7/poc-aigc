@@ -165,6 +165,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function copyText(text) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            const tabId = tabs[0].id;
+            chrome.runtime.sendMessage({ action: "copyToTextArea", text: text, tabId: tabId }, (response) => {
+                if (response.success) {
+                    console.log("Content copied to textarea.");
+                }
+            });
+        });
+
         navigator.clipboard.writeText(text)
             .then(() => {
                 console.log("Text copied to clipboard");

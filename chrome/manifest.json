@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Prompt Clipboard",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "create, edit, manage your prompts, oneclick copy",
     "background": {
         "service_worker": "service-worker.js"
@@ -13,7 +13,12 @@
         "sidePanel",
         "tabs",
         "storage",
-        "clipboardWrite"
+        "clipboardWrite",
+        "scripting"
+    ],
+    "host_permissions": [
+        "http://*.openai.com/",
+        "https://*.openai.com/"
     ],
     "commands": {
         "_execute_action": {
