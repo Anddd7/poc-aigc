@@ -1,13 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const createPromptButton = document.getElementById("createPromptButton");
     const promptList = document.getElementById("promptList");
 
     // Load and render existing prompts on first load
     loadAndRenderPrompts();
-
-    createPromptButton.addEventListener("click", function () {
-        showPromptDialog();
-    });
 
     function loadAndRenderPrompts() {
         promptList.innerHTML = "";
@@ -19,8 +14,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    let promptDialog = null;
+    const createPromptButton = document.getElementById("createPromptButton");
+    createPromptButton.addEventListener("click", function () {
+        showPromptDialog();
+    });
 
+    let promptDialog = null;
     function showPromptDialog() {
         if (promptDialog) {
             return;
@@ -109,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let variableDialog = null;
-
     function showVariableDialog(variables, originalText) {
         if (!variableDialog) {
             createVariableDialog(variables, originalText);
@@ -213,4 +211,42 @@ document.addEventListener("DOMContentLoaded", function () {
             addPromptToUI(prompt.id, prompt.title, prompt.content);
         });
     }
+
+    // export prompts as json file on exportButton click
+    const exportButton = document.getElementById("exportButton");
+    exportButton.addEventListener("click", function () {
+        chrome.storage.sync.get(["prompts"], function (result) {
+            const prompts = result.prompts || [];
+            const json = JSON.stringify(prompts);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "prompt-clipboard.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    });
+
+    // import prompts from json file on importButton click
+    const importButton = document.getElementById("importButton");
+    importButton.addEventListener("click", function () {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "application/json";
+        fileInput.addEventListener("change", function () {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.addEventListener("load", function (event) {
+                const json = event.target.result;
+                const prompts = JSON.parse(json);
+                chrome.storage.sync.set({ prompts: prompts }, function () {
+                    console.log("Prompts imported from file.");
+                    loadAndRenderPrompts();
+                });
+            });
+            reader.readAsText(file);
+        });
+        fileInput.click();
+    })
 });

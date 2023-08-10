@@ -45,8 +45,16 @@
       margin: 5px;
     }
 
-    .tool-bar input {
-      width: 160px;
+    .tool-bar> :first-child {
+      flex-grow: 1;
+    }
+
+    .tool-bar button {
+      min-width: 60px;
+    }
+
+    .tool-bar .spacer {
+      width: 10px;
     }
   </style>
 </head>
@@ -54,13 +62,19 @@
 <body>
   <h1>Prompt Clipboard</h1>
   <div class="tool-bar">
-    <input type="text" id="searchInput" placeholder="Search by title or content">
+    <input type="text" id="searchInput" placeholder="title or content">
+    <div class="spacer"></div>
     <button id="searchButton">Search</button>
+    <div class="spacer"></div>
     <button id="clearSearchButton">Clear</button>
   </div>
 
   <div class="tool-bar">
     <button id="createPromptButton">Create Prompt</button>
+    <div class="spacer"></div>
+    <button id="exportButton">Export</button>
+    <div class="spacer"></div>
+    <button id="importButton">Import</button>
   </div>
   <div id="promptList">
     <!-- Prompt panels will be added here -->
