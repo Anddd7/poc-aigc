@@ -10,9 +10,9 @@
 - Jupyter (Kotlin/Python)
 - Langchain,
 - Continue, <https://github.com/continuedev/continue>
-- Ollama, <https://ollama.com/>
+- ollama, <https://ollama.com/>
 - llama-index
-- 
+- Stable Diffusion
 
 ## Articles
 
