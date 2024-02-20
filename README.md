@@ -1,12 +1,19 @@
 # AIGC
 
-prompt management
+- Prompt engineering
+- Agent
+- Chain of Thoughts
+- Self-hosted Models
+  
+## Tools
 
-- template
-- generate
+- Jupyter (Kotlin/Python)
+- Langchain,
+- Continue, <https://github.com/continuedev/continue>
+- Ollama, <https://ollama.com/>
+- llama-index
+- 
 
-automation agent
+## Articles
 
-## Dependencies
-
-Jupyter (Kotlin/Python)
+- [Building LLM-Powered Web Apps with Client-Side Technology](https://ollama.com/blog/building-llm-powered-web-apps)
