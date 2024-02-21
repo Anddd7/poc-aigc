@@ -19,3 +19,5 @@ similar like docker
 > There’s an additional step required for followup questions, which may contain pronouns or other references to prior chat history. Because vectorstores perform retrieval by semantic similarity, these references can throw off retrieval. Therefore, we add an additional dereferencing step that rephrases the initial step into a “standalone” question before using that question to search our vectorstore.
 
 ![alt text](docs/llm-query.png)
+
+## [Sample](https://github.com/Anddd7/library-reader)
