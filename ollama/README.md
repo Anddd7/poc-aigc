@@ -20,4 +20,4 @@ similar like docker
 
 ![alt text](docs/llm-query.png)
 
-## [Sample](https://github.com/Anddd7/library-reader)
+## [Sample](./library-reader)
