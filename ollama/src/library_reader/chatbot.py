@@ -1,3 +1,5 @@
+# example from <https://python.langchain.com/docs/guides/local_llms>
+
 from langchain_community.llms import Ollama
 
 from langchain.callbacks.manager import CallbackManager
