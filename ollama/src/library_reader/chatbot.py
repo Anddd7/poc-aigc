@@ -6,7 +6,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 llm = Ollama(
-    model="tinyllama:1.1b",
+    model="mistral",
     callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
 )
 llm.invoke("The first man on the moon was ...")
